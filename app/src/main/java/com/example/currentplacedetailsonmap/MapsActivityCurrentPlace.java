@@ -29,6 +29,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -98,6 +99,9 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
     double [] lon = new double[128];
     String [] name = new String[128];
     LatLng [] coord = new LatLng[128];
+    String [] handles = new String[128];
+    String [] text = new String[128];
+    int [] color = new int[100];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,11 +147,16 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
         parse.useDelimiter("%");
         while (parse.hasNext()){
             name[count] = parse.next();
-            System.out.println(name[count]);
+            handles[count] = parse.next();
+            text[count] = parse.next();
+            try {
+                color[count] = Integer.parseInt(text[count].substring(text[count].length() - 1));
+            }
+            catch (Exception e) {
+                color[count] = 0;
+            }
             lat[count] = Double.parseDouble(parse.next());
-            System.out.println(lat[count]);
             lon[count] = Double.parseDouble(parse.next());
-
             count++;
         }
         for(int i=0;i<count;i++){
@@ -227,7 +236,26 @@ public class MapsActivityCurrentPlace extends AppCompatActivity
     public void onMapReady(GoogleMap map) {
         mMap = map;
         for (int i=0;i<count;i++) {
-            map.addMarker(new MarkerOptions().position(coord[i]).title(name[i]));
+            switch (color[i]) {
+                case 1:
+                    map.addMarker(new MarkerOptions().position(coord[i]).title(name[i]).snippet(handles[i]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+                    break;
+                case 2:
+                    map.addMarker(new MarkerOptions().position(coord[i]).title(name[i]).snippet(handles[i]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                    break;
+                case 3:
+                    map.addMarker(new MarkerOptions().position(coord[i]).title(name[i]).snippet(handles[i]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                    break;
+                case 4:
+                    map.addMarker(new MarkerOptions().position(coord[i]).title(name[i]).snippet(handles[i]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                    break;
+                case 5:
+                    map.addMarker(new MarkerOptions().position(coord[i]).title(name[i]).snippet(handles[i]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                    break;
+                default:
+                    map.addMarker(new MarkerOptions().position(coord[i]).title(name[i]).snippet(handles[i]).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+                    
+            }
 
         }
         // Use a custom info window adapter to handle multiple lines of text in the
